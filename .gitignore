@@ -42,3 +42,4 @@ Thumbs.db
 .gitignore
 node_modules
 .vscode
+/ .vscode

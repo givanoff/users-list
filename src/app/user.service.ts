@@ -32,10 +32,10 @@ export class UserService {
     }
 
     delete(hero: User): Promise<Response> {
-        let headers = new Headers();
+        const headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        let url = 'http://localhost:8080/users/16';
+        const url = 'http://localhost:8080/users/16';
 
         return this.http
             .delete(url, { headers: headers })
