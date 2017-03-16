@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 @Component({
   moduleId: module.id,
   selector: 'app-users',
+  // providers: [UserService],
   templateUrl: 'users.component.html'
 })
 
@@ -15,7 +16,7 @@ export class UsersComponent implements OnInit {
   users: User[];
   addingUser = false;
   error: any;
-  // showNgFor = false;
+  selectedUser: User;
 
   constructor(
     private userService: UserService,
@@ -29,6 +30,20 @@ export class UsersComponent implements OnInit {
   }
   addUser(): void {
     this.addingUser = true;
+    this.selectedUser = null;
+  }
+
+  deleteUser(user: User, event: any): void {
+    event.stopPropagation();
+    this.userService
+      .delete(user)
+      .then(resp => {
+        this.users = this.users.filter(usr => usr !== user);
+        if (this.selectedUser === user) {
+          this.selectedUser = null;
+        }
+      })
+      .catch(error => this.error = error);
   }
 
   close(savedUser: User): void {
@@ -39,8 +54,12 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  onSelect(user: User): void {
+    this.selectedUser = user;
+    this.addingUser = false;
+  }
+
   ngOnInit(): void {
-   let usr = this.getUsers();
-   console.log(usr);
+    this.getUsers();
   }
 }

@@ -7,70 +7,69 @@ import { User } from './user';
 
 @Injectable()
 export class UserService {
-    private userUrl = 'http://localhost:8080/users';
+  private userUrl = 'http://localhost:8080/users';
 
-    constructor(private http: Http) { }
+  constructor(private http: Http) { }
 
-    getUsers(): Promise<User[]> {
-        return this.http
-            .get(this.userUrl)
-            .toPromise()
-            .then(response => response.json().data as User[])
-            .catch(this.handleError);
+  getUsers(): Promise<User[]> {
+    return this.http
+      .get(this.userUrl)
+      .toPromise()
+      .then(response => response.json().data as User[])
+      .catch(this.handleError);
+  }
+
+  getUser(firstName: string): Promise<User> {
+    return this.getUsers()
+      .then(users => users.find(user => user.firstName === name));
+  }
+
+  save(user: User): Promise<User> {
+    if (user.firstName) {
+      return this.put(user);
     }
+    return this.post(user);
+  }
 
-    getUser(name: string): Promise<User> {
-        return this.getUsers()
-            .then(users => users.find(user => user.firstName === name));
-    }
+  delete(user: User): Promise<Response> {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
 
-    save(user: User): Promise<User> {
-        if (user.firstName) {
-            return this.put(user);
-        }
-        return this.post(user);
-    }
+    const url = 'http://localhost:8080/users/16';
 
-    delete(hero: User): Promise<Response> {
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+    return this.http
+      .delete(url, { headers: headers })
+      .toPromise()
+      .catch(this.handleError);
+  }
 
-        const url = 'http://localhost:8080/users/16';
+  private post(user: User): Promise<User> {
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
 
-        return this.http
-            .delete(url, { headers: headers })
-            .toPromise()
-            .catch(this.handleError);
-    }
+    return this.http
+      .post(this.userUrl, JSON.stringify(user), { headers: headers })
+      .toPromise()
+      .then(res => res.json().data)
+      .catch(this.handleError);
+  }
 
-    private post(user: User): Promise<User> {
-        const headers = new Headers({
-            'Content-Type': 'application/json'
-        });
+  private put(user: User): Promise<User> {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
 
-        return this.http
-            .post(this.userUrl, JSON.stringify(user), { headers: headers })
-            .toPromise()
-            .then(res => res.json().data)
-            .catch(this.handleError);
-    }
+    const url = 'http://localhost:8080/users';
 
-    private put(user: User): Promise<User> {
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+    return this.http
+      .put(url, JSON.stringify(user), { headers: headers })
+      .toPromise()
+      .then(() => user)
+      .catch(this.handleError);
+  }
 
-        const url = 'http://localhost:8080/users';
-
-        return this.http
-            .put(url, JSON.stringify(user), { headers: headers })
-            .toPromise()
-            .then(() => user)
-            .catch(this.handleError);
-    }
-
-    private handleError(error: any): Promise<any> {
-        console.error('Error ', error);
-        return Promise.reject(error.message || error);
-    }
-
+  private handleError(error: any): Promise<any> {
+    console.error('Error ', error);
+    return Promise.reject(error.message || error);
+  }
 }
